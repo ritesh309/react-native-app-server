@@ -80,7 +80,7 @@ router.post( '/signup', async ( req, res ) => {
         } );
     } else {
         //Creating if user already exists
-        User.findOne( { email } ).then( result => {
+        User.find( { email } ).then( result => {
             if ( result.length ) {
                 res.json( {
                     status: "FAILED",
@@ -99,30 +99,21 @@ router.post( '/signup', async ( req, res ) => {
                         password: hashedPassword,
                         verified: false,
 
-                    } );
+                    } )
 
-                  const result =  newUser.save();
-                    if(result){
-                         // Send verification message
-/                       sendVerificationEmail( result, res );
-                    }else{
-                         res.json( {
+                    newUser.save()
+                        .then( ( result ) => {
+                            //Send verification message
+                            sendVerificationEmail( result, res );
+
+                        } )
+                        .catch( error => {
+                            console.log( error )
+                            res.json( {
                                 status: "FAILED",
                                 message: "Error in Saving User account!"
                             } );
-                    }
-//                         .then( ( result ) => {
-//                             //Send verification message
-//                             sendVerificationEmail( result, res );
-
-//                         } )
-//                         .catch( error => {
-//                             console.log( error )
-//                             res.json( {
-//                                 status: "FAILED",
-//                                 message: "Error in Saving User account!"
-//                             } );
-//                         } )
+                        } )
 
                 } ).catch( error => {
                     console.log( error );
@@ -132,7 +123,6 @@ router.post( '/signup', async ( req, res ) => {
                     } );
                 } )
             }
-
         } ).catch( err => {
             console.log( err );
             res.json( {
@@ -150,7 +140,8 @@ router.post( '/signup', async ( req, res ) => {
 const sendVerificationEmail = ( { _id, email }, res ) => {
     //Url to send the mail
     const uniqueString = uuidv4() + _id;
-    const currentUrl = `https://loginlogoutserverreactnative.herokuapp.com/user/verify/${ _id }/${ uniqueString }/ `;
+    const url = process.env.EMAIL_SERVER_URL || "http://localhost:4000"
+    const currentUrl = `${ url }/user/verify/${ _id }/${ uniqueString }/ `;
 
 
     //mailing mailOptions
