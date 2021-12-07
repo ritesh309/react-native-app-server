@@ -16,8 +16,7 @@ const usersSchema = new mongoose.Schema( {
     confirmPassword: {
         type: String,
     },
-    dateOfBirth:String,
-    verified:Boolean
+    verified: Boolean
 
 }, { timestamps: true } );
 

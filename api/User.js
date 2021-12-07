@@ -42,9 +42,9 @@ transporter.verify( ( error, success ) => {
 
 router.post( '/signup', async ( req, res ) => {
 
-    let { fullName, dateOfBirth, email, phone, password, confirmPassword } = req.body;
+    let { fullName, email, phone, password, confirmPassword } = req.body;
     email = email.trim();
-    dateOfBirth = dateOfBirth.trim();
+
     password = password.trim();
 
     if ( !fullName || !email || !phone || !password || !confirmPassword ) {
@@ -61,12 +61,6 @@ router.post( '/signup', async ( req, res ) => {
         res.json( {
             status: "FAILED",
             message: "Inavalid Email"
-        } );
-    }
-    else if ( !new Date( dateOfBirth ).getUTCDate() ) {
-        res.json( {
-            status: "FAILED",
-            message: "Inavalid dateOfBirth"
         } );
     } else if ( password.length < 6 ) {
         res.json( {
@@ -95,16 +89,21 @@ router.post( '/signup', async ( req, res ) => {
                         fullName,
                         email,
                         phone,
-                        dateOfBirth,
+
                         password: hashedPassword,
                         verified: false,
 
                     } )
 
-                    newUser.save()
-                        .then( ( result ) => {
+                    const data = newUser.save()
+                        .then( ( data ) => {
                             //Send verification message
-                            sendVerificationEmail( result, res );
+                            sendVerificationEmail( data, res );
+                            res.json( {
+                                status: "SUCCESS",
+                                message: "Email Sent For verification",
+                                data: data
+                            } )
 
                         } )
                         .catch( error => {
@@ -324,7 +323,8 @@ router.post( "/login", ( req, res ) => {
                                 if ( result ) {
                                     res.json( {
                                         status: "SUCCESS",
-                                        message: "Login SUCCESS !"
+                                        message: "Login SUCCESS !",
+                                        data
                                     } );
                                 } else {
                                     res.json( {
