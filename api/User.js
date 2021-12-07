@@ -149,9 +149,8 @@ router.post( '/signup', async ( req, res ) => {
 
 const sendVerificationEmail = ( { _id, email }, res ) => {
     //Url to send the mail
-    const Url=process.env.EMAIL_SEND_SERVER
     const uniqueString = uuidv4() + _id;
-    const currentUrl = `Url/user/verify/${ _id }/${ uniqueString }/ `;
+    const currentUrl = `https://loginlogoutserverreactnative.herokuapp.com/user/verify/${ _id }/${ uniqueString }/ `;
 
 
     //mailing mailOptions
