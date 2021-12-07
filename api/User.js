@@ -80,7 +80,7 @@ router.post( '/signup', async ( req, res ) => {
         } );
     } else {
         //Creating if user already exists
-        User.find( { email } ).then( result => {
+        User.findOne( { email } ).then( result => {
             if ( result.length ) {
                 res.json( {
                     status: "FAILED",
@@ -99,21 +99,30 @@ router.post( '/signup', async ( req, res ) => {
                         password: hashedPassword,
                         verified: false,
 
-                    } )
+                    } );
 
-                    newUser.save()
-                        .then( ( result ) => {
-                            //Send verification message
-                            sendVerificationEmail( result, res );
-
-                        } )
-                        .catch( error => {
-                            console.log( error )
-                            res.json( {
+                  const result =  newUser.save();
+                    if(result){
+                         // Send verification message
+/                       sendVerificationEmail( result, res );
+                    }else{
+                         res.json( {
                                 status: "FAILED",
                                 message: "Error in Saving User account!"
                             } );
-                        } )
+                    }
+//                         .then( ( result ) => {
+//                             //Send verification message
+//                             sendVerificationEmail( result, res );
+
+//                         } )
+//                         .catch( error => {
+//                             console.log( error )
+//                             res.json( {
+//                                 status: "FAILED",
+//                                 message: "Error in Saving User account!"
+//                             } );
+//                         } )
 
                 } ).catch( error => {
                     console.log( error );
@@ -140,8 +149,9 @@ router.post( '/signup', async ( req, res ) => {
 
 const sendVerificationEmail = ( { _id, email }, res ) => {
     //Url to send the mail
+    const Url=process.env.EMAIL_SEND_SERVER
     const uniqueString = uuidv4() + _id;
-    const currentUrl = `${process.env.MAIN_SERVER}/user/verify/${ _id }/${ uniqueString }/ `;
+    const currentUrl = `Url/user/verify/${ _id }/${ uniqueString }/ `;
 
 
     //mailing mailOptions
