@@ -119,11 +119,11 @@ router.post( "/login", async ( req, res ) => {
 
             else {
 
-                res.status( 201 ).send( { success: "Login Successfully" } )
+                res.status( 200 ).send( { success: "Login Successfully" } )
 
             }
         } else {
-            res.status( 502 ).send( { error: "user not found" } )
+            res.status( 500 ).send( { error: "user not found" } )
         }
     } catch ( error ) {
 
